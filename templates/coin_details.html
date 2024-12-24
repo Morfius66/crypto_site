@@ -1,0 +1,32 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<h2>{{ coin.name }} ({{ coin.symbol.upper() }})</h2>
+<img src="{{ coin.image.large }}" alt="{{ coin.name }} logo">
+<p><strong>Цена:</strong> ${{ "{:,.2f}".format(coin.market_data.current_price.usd) }}</p>
+<p><strong>Рыночная капитализация:</strong> ${{ "{:,.2f}".format(coin.market_data.market_cap.usd) }}</p>
+<p><strong>Объем торгов (24ч):</strong> ${{ "{:,.2f}".format(coin.market_data.total_volume.usd) }}</p>
+<p><strong>Официальный сайт:</strong> <a href="{{ coin.links.homepage[0] }}">{{ coin.links.homepage[0] }}</a></p>
+
+<h3>График цены (за последние 7 дней)</h3>
+<canvas id="priceChart"></canvas>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const ctx = document.getElementById('priceChart').getContext('2d');
+    const prices = {{ coin.market_data.sparkline_7d.price| tojson }};
+    const labels = Array.from({ length: prices.length }, (_, i) => i);
+
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Цена (USD)',
+                data: prices,
+                borderColor: 'rgba(75, 192, 192, 1)',
+                tension: 0.1
+            }]
+        },
+    });
+</script>
+{% endblock %}

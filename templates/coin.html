@@ -1,0 +1,30 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>{{ coin.name }} ({{ coin.symbol.upper() }})</h2>
+    <img src="{{ coin.image.large }}" alt="{{ coin.name }}" class="mb-3">
+    <p><strong>Цена:</strong> ${{ "{:,.2f}".format(coin.market_data.current_price.usd) }}</p>
+    <p><strong>Рыночная капитализация:</strong> ${{ "{:,.2f}".format(coin.market_data.market_cap.usd) }}</p>
+    <p><strong>Объем торгов (24ч):</strong> ${{ "{:,.2f}".format(coin.market_data.total_volume.usd) }}</p>
+    <h3>График (7 дней)</h3>
+    <canvas id="priceChart"></canvas>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const ctx = document.getElementById('priceChart').getContext('2d');
+        const prices = {{ coin.market_data.sparkline_7d.price | tojson }};
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: prices.map((_, i) => i),
+                datasets: [{
+                    label: 'Цена (USD)',
+                    data: prices,
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    tension: 0.1
+                }]
+            },
+        });
+    </script>
+</div>
+{% endblock %}

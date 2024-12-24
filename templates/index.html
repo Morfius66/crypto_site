@@ -1,0 +1,48 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<div class="ticker bg-light py-2">
+    <marquee>
+        {% for coin in crypto_data[:10] %}
+        <span class="mx-3">
+            {{ coin.name }}: ${{ "{:,.2f}".format(coin.current_price) }}
+            ({{ "{:.2f}".format(coin.price_change_percentage_24h) }}%)
+        </span>
+        {% endfor %}
+    </marquee>
+</div>
+
+<div class="container mt-4">
+    <h2>Криптовалюты</h2>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Логотип</th>
+                <th>Название</th>
+                <th>Цена</th>
+                <th>Изменение (24ч)</th>
+                <th>Рыночная капитализация</th>
+                <th>Объем торгов</th>
+                <th>Действия</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for coin in crypto_data %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                <td><img src="{{ coin.image }}" alt="{{ coin.name }}" width="24"></td>
+                <td>{{ coin.name }} ({{ coin.symbol.upper() }})</td>
+                <td>${{ "{:,.2f}".format(coin.current_price) }}</td>
+                <td class="{{ 'text-success' if coin.price_change_percentage_24h >= 0 else 'text-danger' }}">
+                    {{ "{:.2f}".format(coin.price_change_percentage_24h) }}%
+                </td>
+                <td>${{ "{:,.2f}".format(coin.market_cap) }}</td>
+                <td>${{ "{:,.2f}".format(coin.total_volume) }}</td>
+                <td><a href="/coin/{{ coin.id }}" class="btn btn-primary btn-sm">Детали</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
